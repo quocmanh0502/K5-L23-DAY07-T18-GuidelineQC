@@ -1,9 +1,9 @@
 # Thông tin nhóm
 
 - Tên nhóm: T18
-- Mã thành viên (ba chữ số): 101, 102
-- Người điều phối: 101
-- Người review bản cuối: 102
+- Mã thành viên (ba chữ số): 2A202603219, 2A202603197
+- Người điều phối: 2A202603219
+- Người review bản cuối: 2A202603197
 - Commit chốt bài (điền ở kênh nộp sau khi commit):
 
 ## Kết quả tóm tắt (điền cuối bài)
