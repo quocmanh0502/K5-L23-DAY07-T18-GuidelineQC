@@ -1,6 +1,7 @@
 [
   {
     "name": "car",
+    "type": "rectangle",
     "color": "#e6194b",
     "attributes": [
       {
@@ -38,6 +39,7 @@
   },
   {
     "name": "truck",
+    "type": "rectangle",
     "color": "#3cb44b",
     "attributes": [
       {
@@ -75,6 +77,7 @@
   },
   {
     "name": "van",
+    "type": "rectangle",
     "color": "#4363d8",
     "attributes": [
       {
@@ -112,6 +115,7 @@
   },
   {
     "name": "motorcycle",
+    "type": "rectangle",
     "color": "#f58231",
     "attributes": [
       {
@@ -149,6 +153,7 @@
   },
   {
     "name": "person",
+    "type": "rectangle",
     "color": "#911eb4",
     "attributes": [
       {
@@ -186,6 +191,7 @@
   },
   {
     "name": "ignore_region",
+    "type": "rectangle",
     "color": "#808080",
     "attributes": []
   }

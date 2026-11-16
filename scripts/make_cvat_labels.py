@@ -35,7 +35,8 @@ def main() -> None:
                     "values": ([str(v) for v in a.get("values", [])] if a["type"] == "select"
                                else [str(a.get("default", "false"))]),
                 })
-        labels.append({"name": name, "color": "#808080" if name == tax.ignore else COLORS[i % len(COLORS)],
+        # CVAT mới bắt buộc trường "type"; lab chỉ dùng bounding box.
+        labels.append({"name": name, "type": "rectangle", "color":"#808080" if name == tax.ignore else COLORS[i % len(COLORS)],
                        "attributes": attrs})
     text = json.dumps(labels, ensure_ascii=False, indent=2)
     out = ROOT / "cvat" / ("labels_final.json" if args.final else "labels_generated.json")
