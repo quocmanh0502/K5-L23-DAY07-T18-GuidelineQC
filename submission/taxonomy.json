@@ -1,13 +1,13 @@
 {
-  "version": "v0",
+  "version": "v1.0",
   "ignore_class": "ignore_region",
   "classes": [
-    {"name": "car", "definition": "Ô tô con, SUV."},
-    {"name": "truck", "definition": "Xe tải, xe có thùng hàng riêng."},
-    {"name": "van", "definition": "Xe thùng kín cỡ nhỏ."},
-    {"name": "motorcycle", "definition": "Xe máy, mô tô."},
-    {"name": "person", "definition": "Người đi bộ hoặc người ngồi trên xe."},
-    {"name": "ignore_region", "definition": "Vùng bỏ qua (không phải vật): nơi không gán từng vật, bỏ sót ở đây không tính là lỗi."}
+    {"name": "car", "definition": "Ô tô chở người cỡ nhỏ, thân liền khối, không có thùng hàng tách rời: sedan, hatchback, wagon, SUV, crossover, taxi (R-08)."},
+    {"name": "truck", "definition": "Xe có cabin và thùng/sàn chở hàng tách rời: xe tải, xe tải nhẹ, bán tải kể cả gắn nắp/khoang trên thùng, xe chở ô tô (R-08, R-09)."},
+    {"name": "van", "definition": "Xe thân cao, khoang sau liền khối với cabin, không có thùng tách rời, tối đa 16 chỗ hoặc chở hàng cỡ nhỏ (R-08); minibus/xe buýt lớn hơn là ignore_region (R-10)."},
+    {"name": "motorcycle", "definition": "Xe hai bánh có động cơ (xe máy, tay ga, mô tô, xe máy điện), kể cả đang đỗ, gồm thùng sidecar/thùng hàng gắn liền; không gồm người ngồi trên xe (R-04)."},
+    {"name": "person", "definition": "Người thật nhìn thấy được: đi bộ, đứng, ngồi, lái hoặc ngồi trên xe máy/xe đạp/xích lô; không gán người sau kính cabin, tượng, ma-nơ-canh, hình in, phản chiếu (R-04, R-05, R-06)."},
+    {"name": "ignore_region", "definition": "Vùng bỏ qua (không phải vật), không có thuộc tính: phương tiện cơ giới ngoài taxonomy như xe buýt, tuk-tuk, auto-rickshaw (R-10) và phần đám đông/cụm >= 5 vật không tách được (R-13); bỏ sót ở đây không tính là lỗi."}
   ],
   "attributes": [
     {"name": "occluded_level", "type": "select", "values": ["0", "1", "2", "3"], "default": "0"},
