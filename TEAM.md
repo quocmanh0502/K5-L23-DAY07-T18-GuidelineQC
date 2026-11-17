@@ -4,8 +4,8 @@
 - Mã thành viên (ba chữ số): 101, 102
 - Người điều phối: 101
 - Người review bản cuối: 102
-- Ngày hoàn thành công việc của nhóm: 16/11/2026 (theo xác nhận của 102).
-- Commit chốt bài (điền ở kênh nộp sau khi commit):
+- Ngày hoàn thành công việc của nhóm: 16/11/2026.
+- Commit chốt hồ sơ QC: `fefb6ae` (commit cập nhật TEAM.md được ghi tại kênh nộp).
 
 ## Kết quả tóm tắt (điền cuối bài)
 
