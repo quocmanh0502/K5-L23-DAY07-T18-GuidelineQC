@@ -1,0 +1,12 @@
+{
+  "status": "USER_CONFIRMED_QC_PASS",
+  "date_recorded": "2026-11-17",
+  "group_completion_date_reported": "2026-11-16",
+  "reported_by": "102",
+  "scope": "Current 40-image, 428-annotation mixed revision",
+  "user_statement": "qc pass nhé",
+  "source_artifact": "submission/qc/labels_mixed_draft.json",
+  "source_sha256": "34f241454323e5d498e77c6e1bcd60e215c48889f89457aa2f88f495ccef4dde",
+  "evidence_type": "User confirmation of QC outcome",
+  "not_claimed": "No new image-by-image inspection by the assistant; earlier rounds remain historical."
+}

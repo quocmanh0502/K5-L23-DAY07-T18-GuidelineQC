@@ -1,0 +1,27 @@
+{
+  "status": "USER_CONFIRMED_QC_PASS",
+  "unit": "image",
+  "selection_method": "random.sample with fixed seed",
+  "seed": 42,
+  "source_images": {
+    "102": 32,
+    "101": 8
+  },
+  "images": 40,
+  "annotations": 428,
+  "source_sha256": {
+    "101": "42c60e00ce1ba85da04f231d9cfd509abf2e24626512d8d86b2e32cf1aeb66eb",
+    "102": "31ddf2443230cf9f5b1e2b15101cf01e49ce898141a647d23aefcaac41697ec0"
+  },
+  "draft_sha256": "34f241454323e5d498e77c6e1bcd60e215c48889f89457aa2f88f495ccef4dde",
+  "review_flags_preserved": false,
+  "review_decisions_created": true,
+  "note": "The source assignment is algorithmic; it is not represented as image-by-image cross-review decisions.",
+  "review_flags_cleared": 27,
+  "remaining_review_flags": 0,
+  "flag_clear_basis": "User instruction: qc pass nh? t?t c? review ?i",
+  "validation_scope": "COCO structure, image coverage and unchanged boxes/classes/other attributes; no new per-image QC measurements",
+  "qc_confirmation": "submission/qc/review_confirmation.json",
+  "qc_round": 3,
+  "review_decision_basis": "User-confirmed acceptance of the complete mixed revision, not new assistant image inspection"
+}

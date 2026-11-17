@@ -1,0 +1,17 @@
+{
+  "date_recorded": "2026-11-17",
+  "reported_by": "102",
+  "source": "User clarification in this conversation",
+  "statements": [
+    "chúng tôi đã chốt từng ca rồi cái AI tạo chỉ để tham khảo",
+    "và việc chốt đó trùng khớp"
+  ],
+  "review_process_reported": "Group compared images and guideline, cross-reviewed and decided each case; the decisions matched the reference draft.",
+  "ai_role_reported": "Reference material and document preparation",
+  "scope": {
+    "images": 40,
+    "annotations": 428
+  },
+  "labels_sha256": "091becad6c2656ae68b70818cf28c32a985e8d1026248842a81b6e48cee996ba",
+  "provenance_preserved": true
+}
