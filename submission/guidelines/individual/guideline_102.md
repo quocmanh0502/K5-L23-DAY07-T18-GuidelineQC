@@ -1,0 +1,130 @@
+# Guideline gán nhãn — v0.1 cá nhân — 102
+
+- Phiên bản: v0.1 cá nhân, đề xuất trước khi họp nhóm.
+- Ngày: 2026-11-16.
+- Người viết / duyệt: 102 (chờ kiểm lại nội dung).
+- Phạm vi: 40 ảnh img_001–img_040; bounding box trên CVAT, xuất COCO 1.0.
+
+## 1. Mục tiêu
+
+Nhãn dùng để huấn luyện mô hình phát hiện người và phương tiện trên ảnh đường phố. Guideline giúp thống nhất đối tượng cần lấy, lớp, phạm vi box và thuộc tính. Bỏ sót người, nhầm phương tiện hoặc gán tượng thành vật thật làm sai dữ liệu huấn luyện và ảnh hưởng khả năng phát hiện trong giao thông.
+
+## 2. Lớp và thuộc tính
+
+### Lớp
+
+Mỗi vật thuộc đúng một lớp. Không tự thêm lớp khi gán.
+
+| Lớp | Định nghĩa | Ví dụ | Phản ví dụ / dễ nhầm với |
+|---|---|---|---|
+| car | Ô tô con, SUV và xe chở người thân thấp, không có thùng hàng riêng. | Ô tô đen img_023, SUV đỏ img_028. | Pickup là truck; xe bạc thân cao img_005 là van. |
+| truck | Xe có cabin và thùng hoặc sàn chở hàng riêng, gồm pickup và xe chuyên chở ô tô. | Pickup img_001, xe chở xe img_002, xe tải nhỏ img_036. | Thùng kín không tự động là van; tượng pickup img_027 không phải xe thật. |
+| van | Xe thân cao, khoang hành khách hoặc hàng hóa liền khối với cabin, không có thùng hàng tách riêng. | Xe bạc phía sau người đi xe máy ở img_005. | Pickup gắn khoang trên thùng img_037 vẫn là truck; xe buýt img_009 ngoài taxonomy. |
+| motorcycle | Xe máy, mô tô, gồm xe có thùng bên gắn liền. | Xe máy img_006, mô tô có thùng bên img_022. | Xe đạp, xích lô và tuk-tuk không gán thành motorcycle. |
+| person | Người thật, kể cả người ngồi trên phương tiện hoặc chỉ nhìn thấy một phần. | Người đi bộ img_014, người ngồi xe máy img_026. | Tượng img_017, người trên biển quảng cáo img_018, ma-nơ-canh img_033. |
+| ignore_region | Vùng có vật thuộc phạm vi nhưng không thể gán hoặc đánh giá từng vật đáng tin cậy. | Phần đám đông quá dày, khó tách ở img_021, img_030. | Không dùng thay một lớp còn phân vân hoặc che toàn bộ ảnh có vật khó. |
+
+Ngoài taxonomy: không gán xe đạp, xích lô, xe buýt, tuk-tuk, động vật và đồ vật khác. Người thật trên các phương tiện đó vẫn gán riêng nếu đủ điều kiện. Không tạo ignore_region chỉ vì một vật ngoài taxonomy; nếu chưa xác định được phạm vi thì ghi vấn đề để reviewer kiểm lại.
+
+### Thuộc tính
+
+Tỉ lệ che khuất được ước lượng theo phần hình dáng đối tượng bị vật khác che, không tính phần ngoài mép ảnh. Đây là ước lượng bằng mắt.
+
+| Thuộc tính | Giá trị | Cách áp dụng |
+|---|---|---|
+| occluded_level | 0 | Không bị vật khác che. |
+| | 1 | Có che khuất, phần bị che không quá 30%. |
+| | 2 | Phần bị che trên 30%, vẫn nhận diện được đối tượng. |
+| | 3 | Nhận diện được lớp nhưng không đủ căn cứ ước lượng mức che. |
+| truncated | yes | Đối tượng thực sự bị cắt bởi biên ảnh. |
+| | no | Vật nằm trọn trong ảnh; chạm biên không tự động có nghĩa là bị cắt. |
+| can_review | tick | Chưa chắc lớp, ranh giới, thuộc tính hoặc tính thật/giả; ghi câu hỏi cần kiểm lại. |
+| | không tick | Quyết định rõ theo guideline. |
+
+Che khuất và cắt mép độc lập; một vật có thể có cả hai. Với ignore_region, để mặc định occluded_level=0, truncated=no, can_review=false; đây là quy ước cho vùng, không mô tả một vật. Nếu ranh giới vùng chưa chắc thì tick can_review.
+
+## 3. Quy tắc vẽ box
+
+| Rule ID | Quy tắc |
+|---|---|
+| R-01 | Mỗi vật thật đủ điều kiện có một box ôm sát phần nhìn thấy. Không kéo tới phần bị khuất. Chỉ dùng bounding box. |
+| R-02 | Các phần nhìn thấy bị ngăn cách vẫn dùng một box nếu chắc cùng một vật. Box có thể chứa vật che ở giữa; không chia một vật thành nhiều box. |
+| R-03 | Vật cắt mép: box dừng tại biên ảnh, truncated=yes. Không suy đoán phần ngoài ảnh. |
+| R-04 | Người và xe máy là đối tượng riêng: một box cho xe, một box cho từng người. Xe không bao người, người không bao xe. Hai người trên một xe tương ứng ba box nếu đủ điều kiện. |
+| R-05 | Xe chở xe: truck cho xe chuyên chở, box riêng và lớp thực tế cho từng xe được chở. Không gộp cả đoàn. Box có thể chồng lấn. |
+| R-06 | Không gán phản chiếu, hình in, tượng, ma-nơ-canh hoặc đồ chơi thành vật thật. Vật thật cùng ảnh vẫn lấy. Chưa chắc thật/giả thì dùng can_review hoặc ghi vấn đề ảnh; không kết luận chỉ vì hình dáng lạ. |
+| R-07 | Không gán phần xe gắn camera hoặc chính xe đó trong gương. Xe khác nhìn trực tiếp vẫn xét riêng. |
+| R-08 | Chiều cao box phần nhìn thấy phải từ 20 pixel trên ảnh gốc. Dưới ngưỡng thì bỏ, không kéo box cho đủ. Phóng màn hình không làm đổi ngưỡng. |
+| R-09 | Tách từng vật trong đám đông khi còn nhận diện và đặt box đáng tin cậy. Chỉ dùng ignore_region cho phần không thể tách; chia vùng nhỏ để tránh bao vật đã gán rõ. Không đặt box đánh giá và vùng ignore lên cùng vật. |
+| R-10 | Tuk-tuk, xe đạp, xích lô, xe buýt ngoài phạm vi; người trên đó vẫn thuộc person. Mô tô với thùng bên là một motorcycle, bao cả thùng bên. |
+| R-11 | Pickup là truck kể cả gắn khoang cao trên thùng. Van thân liền khối. Xe tải cabin và thùng riêng vẫn là truck. Xe độ hoặc trưng bày không tự động bị loại. |
+| R-12 | Xe đỗ, xe được vận chuyển vẫn lấy nếu là xe thật. Vật quá mờ chưa xác định được lớp thì ghi vùng và vấn đề, không đoán lớp. Chỉ dùng ignore_region khi xác định vùng có vật trong phạm vi nhưng không thể đánh giá riêng. |
+
+Box xe gồm thân, bánh và bộ phận gắn liền nhìn thấy; không bao bóng đổ, phản chiếu, hàng rời hoặc vật riêng đặt trên xe. Box người bao cơ thể, quần áo, đồ đội đầu; không kéo box để bao hành lý rời hoặc thanh dài đang mang.
+
+Có box chưa chắc thì tick can_review và ghi câu hỏi. Chưa đặt được box thì ghi ảnh, vùng, lý do; tập hợp vào submission/qc/image_issues.csv sau khi khóa nhãn độc lập.
+
+## 4. Ca khó
+
+Đây là các đề xuất cá nhân trước calibration, không phải kết quả QC đã nghiệm thu. Khi gán phải kiểm tra chiều cao box trên ảnh gốc.
+
+| Ảnh | Tình huống | Rule ID | Quyết định | Lý do |
+|---|---|---|---|---|
+| img_001 | Pickup nhỏ, người phía sau bị che. | R-02, R-11 | Pickup là truck; từng người rõ có box theo phần nhìn thấy. | Thùng hàng tách cabin; không dựng phần người bị che. |
+| img_002 | Xe chuyên chở ô tô. | R-05 | Truck cho xe chở, box và lớp riêng cho từng xe trên giá. | Vật được vận chuyển vẫn độc lập. |
+| img_004, img_016 | Tuk-tuk. | R-10 | Bỏ tuk-tuk; người thật trên xe xét riêng. | Ngoài taxonomy. |
+| img_005 | Người, xe máy che nhau; xe bạc phía sau. | R-02, R-04, R-11 | Người và xe tách riêng; xe bạc thân cao liền khối là van. | Che khuất không gộp các vật. |
+| img_006 | Người trên xe máy và xe đạp. | R-04, R-10 | Box riêng từng người và xe máy; bỏ xe đạp, vẫn lấy người. | Kiểm lại quy tắc người–xe trên ảnh khác. |
+| img_009, img_037 | Xe buýt, minibus. | R-10 | Không ép xe buýt thành van. | Giữ phạm vi taxonomy. |
+| img_011 | Tượng lớn, vật thật ở nền. | R-06, R-08 | Bỏ tượng; xét người, xe thật và đo ngưỡng. | Không gán vật mô phỏng. |
+| img_012 | Pickup chở hàng. | R-11 | Truck, không bao hàng rời; ô tô bên cạnh là car. | Theo cấu trúc xe. |
+| img_014 | Phương tiện nhòe chuyển động. | R-12 | Lấy người rõ; phương tiện chỉ lấy khi nhận diện được, phần chưa rõ ghi vấn đề. | Không đoán lớp từ vệt nhòe. |
+| img_015 | Car cắt ở hai biên. | R-03 | Box trong ảnh, truncated=yes. | Phân biệt cắt mép và che khuất. |
+| img_017, img_018 | Tượng người và ảnh người trên biển. | R-06 | Không gán person. | Không phải người thật. |
+| img_019 | Xe vàng hình dáng lạ, người và nhân vật trang trí. | R-06, R-12 | Đề xuất car cho xe, person cho người thật, bỏ nhân vật trang trí; can_review tính thật/giả của xe. | Cần reviewer xác nhận xe, không kết luận từ hình dáng. |
+| img_020 | Gương phản chiếu xe gắn camera. | R-06, R-07 | Bỏ xe trong gương và phần xe chủ. | Không đếm phản chiếu thành vật thứ hai. |
+| img_021 | Đám đông người và xe máy. | R-04, R-09 | Tách vật còn rõ; ignore_region chỉ ở phần không thể tách. | Không bỏ toàn bộ ảnh. |
+| img_022 | Mô tô có thùng bên. | R-10 | Một motorcycle bao cả thùng bên; người nếu có xét riêng. | Bộ phận gắn liền. |
+| img_023 | Người điều khiển xích lô. | R-10 | Person cho người, bỏ xích lô; car cho ô tô đen. | Tách vật trong và ngoài phạm vi. |
+| img_024 | Xe vàng nhỏ trên nóc ô tô trưng bày. | R-05, R-06 | Car cho xe thật dưới; xe vàng cần can_review hoặc vấn đề ảnh trước khi chốt thật/giả. | Chưa đủ căn cứ xác định xe thật hay mô hình. |
+| img_025, img_039 | Người, xe ở xa. | R-08 | Đo chiều cao trên ảnh gốc trước khi lấy hoặc bỏ. | Ảnh thu nhỏ không chứng minh ngưỡng. |
+| img_026 | Hai người trên một xe máy cắt mép. | R-03, R-04 | Hai person, một motorcycle; xét truncated riêng từng vật. | Người và xe độc lập. |
+| img_027 | Tượng pickup trên bệ trong nghĩa trang. | R-06 | Không gán truck. | Vật mô phỏng. |
+| img_028 | Pickup chở tượng ngựa, SUV đỏ. | R-06, R-11 | Truck cho pickup, car cho SUV; bỏ tượng ngựa. | Xử lý riêng xe và vật trang trí. |
+| img_029 | Thanh dài che người và xe. | R-02, R-04 | Tách người và xe máy, vẫn lấy người đi xe đạp; không bao thanh dài vào người. | Đồ mang theo không phải cơ thể. |
+| img_030 | Bãi xe máy dày. | R-09, R-12 | Lấy xe đỗ còn rõ; giới hạn ignore_region cho phần khó tách. | Xe đỗ vẫn trong phạm vi. |
+| img_031, img_034 | Tối hoặc ngược sáng. | R-08, R-12 | Chỉ lấy khi xác định được vật, lớp; ghi ca chưa rõ để review. | Không suy ra vật từ đèn hay bóng. |
+| img_032 | Hàng người, car cắt biên trái. | R-03, R-09 | Tách từng người còn rõ; car truncated=yes. | Đứng gần nhau chưa đủ để bỏ vào ignore. |
+| img_033 | Ma-nơ-canh. | R-06 | Không gán person. | Không phải người thật. |
+| img_035 | Xe ba bánh chở hàng. | R-10 | Bỏ xe ba bánh; xe máy, car và người xét riêng. | Không ép lớp. |
+| img_036 | Xe tải thùng kín nhỏ. | R-11 | Truck. | Cabin và thùng riêng. |
+| img_037 | Pickup gắn khoang cao. | R-11 | Truck; xe buýt nền ngoài phạm vi. | Khoang thêm không đổi cấu trúc pickup. |
+| img_038 | Tủ ô tô đồ chơi. | R-06 | Không gán car. | Mô hình không phải xe thật. |
+| img_040 | Người che taxi, xe máy cắt mép. | R-02, R-03, R-04 | Person, car và motorcycle riêng khi đủ điều kiện; xét che/cắt từng vật. | Không gộp người và xe hoặc suy đoán ngoài ảnh. |
+
+## 5. QC và phiên bản
+
+Giữ nguyên mục rules trong submission/taxonomy.json:
+
+| Tham số | Giá trị |
+|---|---:|
+| min_box_height_px | 20 |
+| iou_thr_large | 0.85 |
+| iou_thr_small | 0.70 |
+| large_px | 50 |
+| iaa_iou | 0.85 |
+| iaa_class | 0.95 |
+| error_rate_img_max | 0.02 |
+| match_iou | 0.50 |
+
+Mỗi người gán độc lập đủ 40 ảnh theo v1.0 đã khóa, xuất COCO và chạy validate_labels. Chỉ so sánh khi cả hai hoàn thành. Đọc IAA cùng số cặp ghép được, box chưa ghép và vùng ignore; đồng thuận cao vẫn có thể cùng sai.
+
+Ca mơ hồ được họp calibration; ghi người chốt từng ca trong calibration_decisions.csv. Theo TEAM.md, 101 điều phối, 102 review bản cuối. Nếu reviewer cũng sửa một ca thì đổi người kiểm lại, ghi rõ.
+
+Sau calibration lưu v1.1, ghi thay đổi editorial hoặc semantic. Thay đổi ý nghĩa cần rà cả lô theo hướng dẫn bài. Giữ nguyên bản cá nhân sau khi nộp riêng.
+
+QC toàn bộ 40 ảnh. Release khi đủ bằng chứng và đạt tiêu chí; Hold khi thiếu hoặc chưa chốt; Rework khi vượt ngưỡng lỗi hoặc có lỗi lặp. Không tạo số đo hay kết quả kiểm tra chưa thực hiện. Một ảnh lỗi trong 40 ảnh là 2.5%, vượt ngưỡng 2% theo ảnh.
+
+| Phiên bản | Thay đổi | Lý do (ca nào) |
+|---|---|---|
+| v0.1 cá nhân | Bổ sung lớp, thuộc tính, quy tắc box và ca ảnh để đề xuất trước họp nhóm. | Người–xe: img_005, img_006, img_026; thật/giả: img_017, img_019, img_024, img_027, img_033, img_038; đám đông và ngoài phạm vi: img_004, img_021, img_030, img_035. |
